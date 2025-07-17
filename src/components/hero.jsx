@@ -84,6 +84,7 @@ export default function Hero() {
   const [recommendationsSeries, setRecommendationsSeries] = useState([]);
 
 
+
   useEffect(() => {
     const fetchAll = async () => {
       try {

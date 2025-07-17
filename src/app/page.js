@@ -42,7 +42,7 @@ export default function Home() {
       <Hero></Hero>
       <CardsSlider title={"Trending Movies"} data={trendingMovies} />
       <GenresSlider />
-      <TripeBanner/>
+      {/* <TripeBanner/> */}
     </div>
   );
 }

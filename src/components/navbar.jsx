@@ -104,7 +104,7 @@ export default function Navbar() {
         <div
           className={`   flex  items-center text-sm  font-medium transition`}
         >
-          {["All", "Movie", "Series", "Genres"].map((item, idx) => (
+          {["All", "Movies", "Series", "Genres"].map((item, idx) => (
             <div
               onClick={item === "Genres" ? handleGenres : undefined}
               key={item}
@@ -114,7 +114,7 @@ export default function Navbar() {
                   : "text-white   hover:text-yellow-400 transition duration-500 "
               } ${item !== "Genres" ? "relative" : ""}`}
             >
-              {item}{" "}
+              <a href={`/${item.toLocaleLowerCase() ==="all"? "":item.toLocaleLowerCase()}`}>{item}{" "}</a>
               {item === "Genres" && (
                 <>
                   <span className="ml-1">▾</span>{" "}

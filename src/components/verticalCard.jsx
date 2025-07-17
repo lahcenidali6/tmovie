@@ -1,4 +1,4 @@
-import { movieGenres,tvGenres } from "@/app/utils/genres";
+import { tvGenres } from "@/app/utils/genres";
 
 
 const VerticalCard = ({ item }) => {
