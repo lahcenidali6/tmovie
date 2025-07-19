@@ -4,6 +4,7 @@ import { BsHeartFill } from "react-icons/bs";
 import { tvGenres, movieGenres } from "@/app/utils/genres";
 
 export default function ItemCard({
+  id,
   title,
   year,
   description,
@@ -28,7 +29,7 @@ export default function ItemCard({
     idToNameOfGenre(movieGenres);
   }
   return (
-    <div className="relative cursor-pointer group bg-neutral-80 rounded-lg  overflow-hidden p-2 md:hover:scale-110 z-20 transition min-w-[169px] min-h-[229px] md:min-w-[193px] md:min-h-[262px] ">
+    <a href={type==="tv"?`/serie/${id}` : `/movie/${id}`} className="relative cursor-pointer group bg-neutral-80 rounded-lg  overflow-hidden p-2 md:hover:scale-110 z-20 transition min-w-[169px] min-h-[229px] md:min-w-[193px] md:min-h-[262px] ">
       <div className="relative rounded-lg overflow-hidden w-full h-full">
         <div className="overflow-x-hidden relative w-full h-full">
           {/* hover box */}
@@ -43,7 +44,7 @@ export default function ItemCard({
           </div>
           <Image
             src={image}
-            alt={title}
+            alt={title || "Poster image" }
             fill
             sizes={"100%"}
             priority
@@ -69,6 +70,6 @@ export default function ItemCard({
         <div className="absolute w-[40px] h-[20px] bg-transparent right-[37px] top-0 rounded-tr-md z-10 shadow-[4px_-4px_1px_#333333]"></div>
         <div className="absolute w-[20px] h-[40px] bg-transparent right-0 top-[37px] rounded-tr-md z-10 shadow-[4px_-4px_1px_#333333]"></div>
       </div>
-    </div>
+    </a>
   );
 }

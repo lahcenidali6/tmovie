@@ -128,7 +128,7 @@ export default function Hero() {
   }, []);
   return (
     <div className="flex flex-wrap xl:flex-nowrap justify-between  gap-4 ">
-      <div className="w-[100%] xl:w-[70%] not-only: ">
+      <div className="w-[100%] xl:w-[70%] flex flex-col gap-y-5 ">
         <VerticalSlider data={popularSeries} />
         <CardsSlider
           title="Recommandation For You"

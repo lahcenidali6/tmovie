@@ -14,10 +14,10 @@ export default function CardsSlider({title,data}) {
         </a>
       </div>
       <div className="flex overflow-x-auto space-x-4 md:py-5 md:pl-3" style={{ scrollbarWidth: 'none' }}>
-        {data?.map((item, index) => (
+        {data?.map((item,index) => (
           <ItemCard
-
-            key={index}
+            key={item.id ?? index}
+            id={item.id}
             title={item.title}
             year={item.year}
             description={item.description}

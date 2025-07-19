@@ -1,0 +1,18 @@
+import React from "react";
+import { FaStar } from "react-icons/fa";
+export default function () {
+  return (
+    <div className="relative bg-[url('https://fr.web.img2.acsta.net/pictures/22/03/29/12/33/0773860.jpg')] bg-cover bg-center h-[230px] w-[195px] rounded-xl  border-neutral-60 border group hover:scale-105 overflow-hidden transition-all">
+      <div className="absolute top-2 left-2 bg-neutral-80  text-white text-xs  px-2 py-1 rounded-full flex items-center gap-1 z-20">
+        <FaStar className="text-primary-50" size={12} /> 8.8
+        <span className="text-neutral-30">/ 10</span>
+      </div>
+
+      <div className="absolute p-3 text-white  bottom-0  text-center w-full bg-neutral-90/50  backdrop-blur-[4px] rounded-b-2xl z-20">
+        <h3 className="text-sm font-light ">Game of Throns</h3>
+      </div>
+
+      <div className="absolute opacity-0 group-hover:opacity-100 w-full h-full bg-black/20"></div>
+    </div>
+  );
+}
