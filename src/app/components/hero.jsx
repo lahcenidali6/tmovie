@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import CardsSlider from "./CardsSlider";
 import NewsSlider from "./newsSlider";
 import VerticalSlider from "./verticaleSlider";
-const key = process.env.NEXT_PUBLIC_API_KEY;
+import { axiosInstance } from "@/lib/axios.js";
 
 const newsItems = [
   {
@@ -85,47 +85,45 @@ export default function Hero() {
 
 
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [dataOfbannerSeries, dataOfRecommendations ] = await Promise.all([
-          fetch(
-            `https://api.themoviedb.org/3/trending/tv/day?api_key=${key}&language=en-US&page=1`
-          ).then((res) => res.json()),
-          fetch(
-            `https://api.themoviedb.org/3/tv/1399/recommendations?api_key=${key}&language=en-US&page=1`
-          ).then((res) => res.json()),
+useEffect(() => {
+  const fetchAll = async () => {
+    try {
+      const [dataOfBannerSeries, dataOfRecommendations] = await Promise.all([
+        axiosInstance.get("/trending/tv/day", { params: { language: "en-US", page: 1 } }),
+        axiosInstance.get("/tv/1399/recommendations", { params: { language: "en-US", page: 1 } }),
+      ]);
 
-        ]);
+      // handle banner slider data
+      const formattedSeries = dataOfBannerSeries.data.results.slice(0, 10).map((series) => ({
+        id: series.id,
+        title: series.name,
+        imdbRating: series.vote_average,
+        genres: series.genre_ids,
+        description: series.overview,
+        type: "tv",
+        imageUrl: `https://image.tmdb.org/t/p/original${series.backdrop_path}`,
+      }));
+      setPopularSeries(formattedSeries);
 
-        // handle banner slider data
-        const formattedSeries = dataOfbannerSeries.results.slice(0, 10).map((series) => ({
-          id: series.id,
-          title: series.name,
-          imdbRating: series.vote_average,
-          genres: series.genre_ids,
-          description: series.overview,
-          type:"tv",
-          imageUrl: `https://image.tmdb.org/t/p/original${series.backdrop_path}`,
-        }));
-        setPopularSeries(formattedSeries);
-        //handle recommendations series
-        const formattedRecommendations = dataOfRecommendations.results.map((serie) => ({
-          title: serie.name,
-          year: serie.first_air_date?.slice(0, 4),
-          rating: serie.vote_average,
-          genres: serie.genre_ids,
-          description: serie.overview,
-          type:"tv",
-          image: `https://image.tmdb.org/t/p/w500${serie.poster_path}`,
-        }));
-        setRecommendationsSeries(formattedRecommendations);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchAll();
-  }, []);
+      // handle recommendations series
+      const formattedRecommendations = dataOfRecommendations.data.results.map((serie) => ({
+        title: serie.name,
+        year: serie.first_air_date?.slice(0, 4),
+        rating: serie.vote_average,
+        genres: serie.genre_ids,
+        description: serie.overview,
+        type: "tv",
+        image: `https://image.tmdb.org/t/p/w500${serie.poster_path}`,
+      }));
+      setRecommendationsSeries(formattedRecommendations);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchAll();
+}, []);
   return (
     <div className="flex flex-wrap xl:flex-nowrap justify-between  gap-4 ">
       <div className="w-[100%] xl:w-[70%] flex flex-col gap-y-5 ">

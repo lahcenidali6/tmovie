@@ -14,16 +14,16 @@ import {
   MessagesSquare,
 } from "lucide-react";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Input } from "@/app/components/ui/input";
+import { Button } from "@/app/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/app/components/ui/select";
 const key = process.env.NEXT_PUBLIC_API_KEY;
 
 export default function Navbar() {
@@ -114,7 +114,15 @@ export default function Navbar() {
                   : "text-white   hover:text-yellow-400 transition duration-500 "
               } ${item !== "Genres" ? "relative" : ""}`}
             >
-              <a href={`/${item.toLocaleLowerCase() ==="all"? "":item.toLocaleLowerCase()}`}>{item}{" "}</a>
+              <a
+                href={`/${
+                  item.toLocaleLowerCase() === "all"
+                    ? ""
+                    : item.toLocaleLowerCase()
+                }`}
+              >
+                {item}{" "}
+              </a>
               {item === "Genres" && (
                 <>
                   <span className="ml-1">▾</span>{" "}

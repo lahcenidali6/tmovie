@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Navbar from "@/components/navbar";
+import Navbar from "@/app/components/navbar";
 import "./globals.css";
-import Sidebar from "@/components/sidebar";
+import Sidebar from "@/app/components/sidebar";
 import { PanelRightOpen } from "lucide-react";
 
 import localFont from "next/font/local";
@@ -30,7 +30,6 @@ export default function RootLayout({ children }) {
   function handleClodeSideBar() {
     setIsCloseSideBar((prev) => !prev);
   }
-
 
   const contentWrapperClass = isCloseSideBar
     ? "w-full"

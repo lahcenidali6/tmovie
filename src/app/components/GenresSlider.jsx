@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ItemCard from "./ItemCard";
-import ItemCardSkeleton from "../components/skeletons/ItemCardSkeleton"
+import ItemCardSkeleton from "./skeletons/ItemCardSkeleton";
 import { movieGenres } from "@/app/utils/genres";
 
 const key = process.env.NEXT_PUBLIC_API_KEY;
