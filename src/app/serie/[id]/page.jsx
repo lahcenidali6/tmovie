@@ -21,8 +21,9 @@ export default function page({ params }) {
   const [data, setData] = useState([]);
   const [stars, setStars] = useState([]);
   const [menu, setMenu] = useState("informations");
-  const [season, setSeason] = useState(1)
-
+  const [numberOfSeasons, setNumberOfSeasons] = useState(1);
+  const [selectedSeason, setSelectedSeason] = useState(1);
+  const [episodes, setEpisodes] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -33,7 +34,6 @@ export default function page({ params }) {
         ]);
 
         const data = dataRes.data;
-        console.log(data);
         const credits = creditsRes.data;
 
         const formatted = {
@@ -60,9 +60,10 @@ export default function page({ params }) {
             ? data.episode_run_time[0] + " min"
             : "N/A",
           imdbRating: data.vote_average.toFixed(1),
-          seasons:data.number_of_seasons,
+          seasons: data.number_of_seasons,
         };
         setData(formatted);
+        setNumberOfSeasons(formatted.seasons);
         setStars(credits.cast);
       } catch (err) {
         console.error(err);
@@ -72,6 +73,21 @@ export default function page({ params }) {
       fetchData();
     }
   }, [id]);
+  useEffect(() => {
+    async function getEpisodes() {
+      try {
+        const episodesRes = await axiosInstance.get(
+          `/tv/${id}/season/${selectedSeason}`
+        );
+        const episodesData= episodesRes.data.episodes
+        setEpisodes(episodesData)
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    getEpisodes()
+  }, [selectedSeason]);
+console.log(episodes)
   return (
     <div className="m-7 flex flex-col gap-y-14">
       {/* hero */}
@@ -330,24 +346,37 @@ export default function page({ params }) {
       <div id="episodes" className="flex flex-col">
         <div className="flex w-full justify-between items-center">
           <h1 className="font-title text-xl font-bold">Episodes</h1>
-          <div className="flex space-x-3 text-white">
-            <button className="py-2 px-3 bg-neutral-80/50 rounded-t-lg">
-              Season 1
-            </button>
-
+          <div className="flex space-x-3 text-white ">
+            {Array.from({ length: numberOfSeasons }, (_, index) => {
+              const seasonNumber = index + 1;
+              return (
+                <button
+                  key={seasonNumber}
+                  onClick={() => setSelectedSeason(seasonNumber)}
+                  className={`relative py-2  px-3 rounded-t-lg  transition-all duration-500 after:content-[''] after:absolute after:left-0 after:-bottom-3 after:w-full  after:h-3  ${
+                    selectedSeason === seasonNumber
+                      ? "bg-neutral-80 text-white after:bg-neutral-80"
+                      : ""
+                  }`}
+                >
+                  Season {seasonNumber}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div className="flex flex-col items-start space-y-7 p-5 bg-gradient-to-b from-neutral-80/50 via-transparent to-neutral-90  rounded-lg">
+        <div className="flex flex-col items-start space-y-7 p-5 bg-gradient-to-b from-neutral-80 via-transparent   rounded-lg">
           <div className="px-3 py-2 rounded-md bg-neutral-70 font-medium text-white">
             10 Episode
           </div>
           <div className="flex items-center space-x-5  w-full ">
-            <EpisodeCrad />
-            <EpisodeCrad />
-            <EpisodeCrad />
-            <EpisodeCrad />
-            <EpisodeCrad />
-            <EpisodeCrad />
+            {
+              episodes.map((episode)=>{
+                return (
+                  <EpisodeCrad key={episode.id} title={episode.name} poster={episode.still_path} rating={episode.vote_average} />
+                )
+              })
+            }
           </div>
           <div className="w-full flex justify-center items-center space-x-4">
             <div className="p-2 bg-neutral-60 rounded-md text-neutral-70">
