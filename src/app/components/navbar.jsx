@@ -188,6 +188,7 @@ export default function Navbar() {
                   return (
                     <SearchCard
                       key={item.id}
+                      id={item.id}
                       title={item.title}
                       type={item.type}
                       rating={item.rating}
@@ -382,6 +383,7 @@ export default function Navbar() {
 }
 
 export function SearchCard({
+  id,
   title,
   type,
   rating,
@@ -399,7 +401,7 @@ export function SearchCard({
       .map((genre) => genre.name);
   }
   return (
-    <div className="flex gap-2 items-center cursor-pointer hover:bg-neutral-90 p-2 rounded-xl ">
+    <a href={`${type=="tv"?`serie/${id}` : `movie/${id}` }`} className="flex gap-2 items-center cursor-pointer hover:bg-neutral-90 p-2 rounded-xl ">
       {/* image  */}
       <div className="relative min-w-[30%] h-[100px] rounded-md overflow-hidden">
         <Image
@@ -431,7 +433,7 @@ export function SearchCard({
           {genreNames[2]}
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
