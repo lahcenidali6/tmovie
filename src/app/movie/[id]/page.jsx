@@ -10,11 +10,10 @@ import {
   Clapperboard,
   Clock,
   Users,
-  ArrowRight,
   ListFilter,
   ThumbsUp,
 } from "lucide-react";
-import EpisodeCrad from "@/app/components/EpisodeCrad";
+
 import SuggestionCard from "@/app/components/SuggestionCard";
 import { axiosInstance } from "@/lib/axios";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
@@ -24,14 +23,8 @@ export default function page({ params }) {
   const [data, setData] = useState([]);
   const [stars, setStars] = useState([]);
   const [menu, setMenu] = useState("informations");
-  const [numberOfSeasons, setNumberOfSeasons] = useState(1);
-  const [selectedSeason, setSelectedSeason] = useState(1);
-  const [episodes, setEpisodes] = useState([]);
   const [loading, setLoading] = useState(false);
-  //scroll states
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const scrollContainerRef = useRef(null);
+
 
   //more like this state
   const [moreData, setMoreData] = useState([]);
@@ -44,9 +37,9 @@ export default function page({ params }) {
       setLoading(true);
       try {
         const [dataRes, creditsRes, moreRes] = await Promise.all([
-          axiosInstance.get(`/tv/${id}`, { params: { language: "en-US" } }),
-          axiosInstance.get(`/tv/${id}/credits`),
-          axiosInstance.get(`/tv/${id}/similar`, {
+          axiosInstance.get(`/movie/${id}`, { params: { language: "en-US" } }),
+          axiosInstance.get(`/movie/${id}/credits`),
+          axiosInstance.get(`/movie/${id}/similar`, {
             params: { language: "en-US", page: 1 },
           }),
         ]);
@@ -54,10 +47,11 @@ export default function page({ params }) {
         const data = dataRes.data;
         const credits = creditsRes.data;
         setMoreData(moreRes.data.results);
+        console.log(data)
         const formatted = {
-          name: data.name,
-          year: data.first_air_date
-            ? new Date(data.first_air_date).getFullYear()
+          name: data.title,
+          year: data.release_date
+            ? data.release_date.slice(0, 4)
             : "N/A",
           overview: data.overview,
           genres: data.genres || [],
@@ -67,21 +61,20 @@ export default function page({ params }) {
             data.origin_country && data.origin_country.length > 0
               ? data.origin_country[0]
               : "Unknown",
-          releaseDate: data.first_air_date || "Unknown",
+          releaseDate: data.release_date || "Unknown",
           language: data.original_language || "Unknown",
           network:
             data.networks && data.networks.length > 0
               ? data.networks[0].name
               : "Unknown",
-          director: data.created_by?.[0]?.name || "N/A",
-          runtime: data.episode_run_time?.[0]
-            ? data.episode_run_time[0] + " min"
+          director: creditsRes.data.crew[0].name || "N/A",
+          runtime: data.runtime
+            ? data.runtime + " min"
             : "N/A",
           imdbRating: data.vote_average.toFixed(1),
           seasons: data.number_of_seasons,
         };
         setData(formatted);
-        setNumberOfSeasons(formatted.seasons);
         setStars(credits.cast);
       } catch (err) {
         console.error(err);
@@ -94,109 +87,13 @@ export default function page({ params }) {
     }
   }, [id]);
 
-  useEffect(() => {
-    async function getEpisodes() {
-      try {
-        const episodesRes = await axiosInstance.get(
-          `/tv/${id}/season/${selectedSeason}`
-        );
-        const episodesData = episodesRes.data.episodes;
-        setEpisodes(episodesData);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    getEpisodes();
-  }, [selectedSeason]);
 
-  //croll script
 
-  const getVisibleCards = () => {
-    if (!scrollContainerRef.current) return 1;
-    const containerWidth = scrollContainerRef.current.clientWidth;
-    const cardWidth = 195 + 20; // card width + space-x-5
-    return Math.floor(containerWidth / cardWidth);
-  };
-
-  // Calculate scroll amount based on visible cards
-  const getScrollAmount = () => {
-    const visibleCards = getVisibleCards();
-    const cardWidth = 195 + 20;
-    return visibleCards * cardWidth;
-  };
-
-  // Check scroll boundaries
-  const checkScrollBoundaries = () => {
-    if (!scrollContainerRef.current) return;
-
-    const container = scrollContainerRef.current;
-    const scrollLeft = container.scrollLeft;
-    const maxScroll = container.scrollWidth - container.clientWidth;
-
-    setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft < maxScroll - 1); // -1 for floating point precision
-  };
-
-  // Scroll left (show previous episodes)
-  const scrollLeft = () => {
-    if (!scrollContainerRef.current || !canScrollLeft) return;
-
-    const scrollAmount = getScrollAmount();
-    scrollContainerRef.current.scrollBy({
-      left: -scrollAmount,
-      behavior: "smooth",
-    });
-  };
-
-  // Scroll right (show next episodes)
-  const scrollRight = () => {
-    if (!scrollContainerRef.current || !canScrollRight) return;
-
-    const scrollAmount = getScrollAmount();
-    scrollContainerRef.current.scrollBy({
-      left: scrollAmount,
-      behavior: "smooth",
-    });
-  };
-
-  // Update button states on scroll
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    // Check initial state
-    checkScrollBoundaries();
-
-    // Add scroll event listener
-    const handleScroll = () => {
-      checkScrollBoundaries();
-    };
-
-    container.addEventListener("scroll", handleScroll);
-
-    // Also check on resize
-    const handleResize = () => {
-      setTimeout(checkScrollBoundaries, 100);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      container.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [episodes]);
-
-  // Reset scroll position when season changes
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
-    }
-  }, [selectedSeason]);
+  //fetch reviews
 
   useEffect(() => {
     async function getReviews() {
-      const reviewsRes = await axiosInstance.get(`/tv/${id}/reviews`, {
+      const reviewsRes = await axiosInstance.get(`/movie/${id}/reviews`, {
         params: { page: 1 },
       });
       setReviewData(reviewsRes.data.results);
@@ -204,7 +101,6 @@ export default function page({ params }) {
     getReviews();
   }, [seeMoreReview]);
 
-  // Loading component
 
   if (loading) {
     return <LoadingSpinner />;
@@ -264,12 +160,12 @@ export default function page({ params }) {
           <div className="flex flex-col gap-y-7 z-10 relative">
             <div className="flex flex-col gap-1">
               <h1 className="text-4xl text-white font-title font-bold">
-                {`${data.name} `}
+                {data.name}
                 <span className="text-neutral-10 text-[12px] font-light ml-5">
                   ({data.year})
                 </span>
               </h1>
-              <p className="">Series . 50Min . TV-MA</p>
+              <p className="">Series . {data.runtime} . TV-MA</p>
             </div>
             <div className="flex max-w-full">
               <div className="flex flex-col flex-1 gap-y-7">
@@ -345,17 +241,7 @@ export default function page({ params }) {
         >
           Informations
         </a>
-        <a
-          href="#episodes"
-          className={`relative transition-all duration-500 py-3 after:transition-all after:duration-300  ${
-            menu === "episodes"
-              ? "text-primary-50 after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:rounded-t-lg after:h-1 after:bg-primary-50"
-              : "text-neutral-400 hover:text-neutral-100"
-          }`}
-          onClick={() => setMenu("episodes")}
-        >
-          Episodes
-        </a>
+
         <a
           href="#more"
           className={`relative transition-all duration-500 py-3 after:transition-all after:duration-300  ${
@@ -467,101 +353,7 @@ export default function page({ params }) {
         </div>
       </div>
 
-      {/* episodes section */}
-      <div id="episodes" className="flex flex-col scroll-mt-20">
-        {/* Season Selector */}
-        <div className="flex w-full justify-between items-center">
-          <h1 className="font-title text-xl font-bold text-white">Episodes</h1>
-          <div
-            className={`hidden md:flex space-x-3 text-white md:${
-              numberOfSeasons > 6 ? "hidden" : "block"
-            } `}
-          >
-            {Array.from({ length: numberOfSeasons }, (_, index) => {
-              const seasonNumber = index + 1;
-              return (
-                <button
-                  key={seasonNumber}
-                  onClick={() => setSelectedSeason(seasonNumber)}
-                  className={`relative py-2 px-3 rounded-t-lg transition-all duration-500 after:content-[''] after:absolute after:left-0 after:-bottom-3 after:w-full after:h-3 ${
-                    selectedSeason === seasonNumber
-                      ? "bg-neutral-80 text-white after:bg-neutral-80"
-                      : ""
-                  }`}
-                >
-                  Season {seasonNumber}
-                </button>
-              );
-            })}
-          </div>
-          <select
-            onChange={(e) => setSelectedSeason(e.target.value)}
-            className={`block md:${
-              numberOfSeasons > 6 ? "block" : "hidden"
-            }   py-2 px-3 rounded-t-lg bg-neutral-80`}
-          >
-            {Array.from({ length: numberOfSeasons }, (_, index) => {
-              const seasonNumber = index + 1;
-              return (
-                <option key={seasonNumber} value={seasonNumber}>
-                  Season {seasonNumber}
-                </option>
-              );
-            })}
-          </select>
-        </div>
 
-        {/* Episodes Content */}
-        <div className="flex flex-col items-start space-y-7 p-5 bg-gradient-to-b from-neutral-80 via-transparent rounded-tr-none md:rounded-tr-lg rounded-lg">
-          {/* Episode Count */}
-          <div className="px-3 py-2 rounded-md bg-neutral-700 font-medium text-white">
-            {episodes.length} Episodes
-          </div>
-
-          {/* Episodes Scroll Container */}
-          <div
-            ref={scrollContainerRef}
-            className="flex items-center space-x-5 w-full overflow-x-scroll md:py-3 md:pl-2 scroll-smooth"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {episodes.map((episode) => (
-              <EpisodeCrad
-                key={episode.id}
-                title={episode.name}
-                poster={episode.still_path}
-                rating={episode.vote_average}
-              />
-            ))}
-          </div>
-
-          {/* Scroll Buttons */}
-          <div className="w-full md:flex justify-center items-center space-x-4 hidden ">
-            <button
-              onClick={scrollLeft}
-              disabled={!canScrollLeft}
-              className={`p-2 rounded-md transition-all duration-200 ${
-                canScrollLeft
-                  ? "bg-primary-50  cursor-pointer"
-                  : "bg-neutral-60 text-neutral-40 cursor-not-allowed opacity-50"
-              }`}
-            >
-              <ArrowRight size={20} className="rotate-180" />
-            </button>
-
-            <button
-              onClick={scrollRight}
-              disabled={!canScrollRight}
-              className={`p-2 rounded-md transition-all duration-200 ${
-                canScrollRight
-                  ? "bg-primary-50  cursor-pointer"
-                  : "bg-neutral-60 text-neutral-40 cursor-not-allowed opacity-50"
-              }`}
-            >
-              <ArrowRight size={20} />
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* More Like This section */}
       <div id="more" className="flex flex-col space-y-5 scroll-mt-20">
@@ -584,7 +376,7 @@ export default function page({ params }) {
                 poster={item.poster_path}
                 genres={item.genre_ids}
                 rating={item.vote_average}
-                type="tv"
+                type="movie"
               />
             );
           })}

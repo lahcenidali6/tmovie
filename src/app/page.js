@@ -5,13 +5,16 @@ import GenresSlider from "@/app/components/GenresSlider.jsx";
 import Hero from "@/app/components/hero.jsx";
 import { useState, useEffect } from "react";
 import { axiosInstance } from "../lib/axios.js";
+import LoadingSpinner from "./components/LoadingSpinner.jsx";
 
 const key = process.env.NEXT_PUBLIC_API_KEY;
 export default function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [trendingSeries, setTrendingSeries] = useState([]);
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     const fetchAll = async () => {
+      setLoading(true)
       try {
         const [dataOfTrendingMovies, dataOfTrendingSeries] = await Promise.all([
           axiosInstance.get("/trending/movie/day", {
@@ -54,10 +57,16 @@ export default function Home() {
       } catch (err) {
         console.error(err);
       }
+      finally{
+        setLoading(false)
+      }
     };
 
     fetchAll();
   }, []);
+    if (loading) {
+      return <LoadingSpinner />;
+    }
   return (
     <div className="flex flex-col gap-7 m-4">
       <Hero></Hero>

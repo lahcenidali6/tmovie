@@ -23,7 +23,7 @@ export const movieGenres = [
 ];
 
 export const tvGenres = [
-  { id: 10759, name: "Action & Adventure" },
+  { id: 10759, name: "Action " },
   { id: 16, name: "Animation" },
   { id: 35, name: "Comedy" },
   { id: 80, name: "Crime" },
@@ -37,6 +37,6 @@ export const tvGenres = [
   { id: 10765, name: "Sci-Fi & Fantasy" },
   { id: 10766, name: "Soap" },
   { id: 10767, name: "Talk" },
-  { id: 10768, name: "War & Politics" },
+  { id: 10768, name: "War" },
   { id: 37, name: "Western" }
 ];
