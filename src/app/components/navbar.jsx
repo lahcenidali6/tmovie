@@ -401,7 +401,7 @@ export function SearchCard({
       .map((genre) => genre.name);
   }
   return (
-    <a href={`${type=="tv"?`serie/${id}` : `movie/${id}` }`} className="flex gap-2 items-center cursor-pointer hover:bg-neutral-90 p-2 rounded-xl ">
+    <a href={`${type=="tv"?`/serie/${id}` : `/movie/${id}` }`} className="flex gap-2 items-center cursor-pointer hover:bg-neutral-90 p-2 rounded-xl ">
       {/* image  */}
       <div className="relative min-w-[30%] h-[100px] rounded-md overflow-hidden">
         <Image
