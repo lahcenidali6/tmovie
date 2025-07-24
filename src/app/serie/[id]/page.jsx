@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import {
@@ -24,6 +24,11 @@ export default function page({ params }) {
   const [numberOfSeasons, setNumberOfSeasons] = useState(1);
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [episodes, setEpisodes] = useState([]);
+  //scroll states
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scrollContainerRef = useRef(null);
+  
 
   useEffect(() => {
     async function fetchData() {
@@ -79,17 +84,102 @@ export default function page({ params }) {
         const episodesRes = await axiosInstance.get(
           `/tv/${id}/season/${selectedSeason}`
         );
-        const episodesData= episodesRes.data.episodes
-        setEpisodes(episodesData)
+        const episodesData = episodesRes.data.episodes;
+        setEpisodes(episodesData);
       } catch (err) {
         console.error(err);
       }
     }
-    getEpisodes()
+    getEpisodes();
   }, [selectedSeason]);
-console.log(episodes)
+
+  //croll script
+
+  const getVisibleCards = () => {
+    if (!scrollContainerRef.current) return 1;
+    const containerWidth = scrollContainerRef.current.clientWidth;
+    const cardWidth = 195 + 20; // card width + space-x-5
+    return Math.floor(containerWidth / cardWidth);
+  };
+
+  // Calculate scroll amount based on visible cards
+  const getScrollAmount = () => {
+    const visibleCards = getVisibleCards();
+    const cardWidth = 195 + 20; 
+    return visibleCards * cardWidth;
+  };
+
+  // Check scroll boundaries
+  const checkScrollBoundaries = () => {
+    if (!scrollContainerRef.current) return;
+
+    const container = scrollContainerRef.current;
+    const scrollLeft = container.scrollLeft;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < maxScroll - 1); // -1 for floating point precision
+  };
+
+  // Scroll left (show previous episodes)
+  const scrollLeft = () => {
+    if (!scrollContainerRef.current || !canScrollLeft) return;
+
+    const scrollAmount = getScrollAmount();
+    scrollContainerRef.current.scrollBy({
+      left: -scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  // Scroll right (show next episodes)
+  const scrollRight = () => {
+    if (!scrollContainerRef.current || !canScrollRight) return;
+
+    const scrollAmount = getScrollAmount();
+    scrollContainerRef.current.scrollBy({
+      left: scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  // Update button states on scroll
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // Check initial state
+    checkScrollBoundaries();
+
+    // Add scroll event listener
+    const handleScroll = () => {
+      checkScrollBoundaries();
+    };
+
+    container.addEventListener("scroll", handleScroll);
+
+    // Also check on resize
+    const handleResize = () => {
+      setTimeout(checkScrollBoundaries, 100);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [episodes]);
+
+  // Reset scroll position when season changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
+    }
+  }, [selectedSeason]);
+
   return (
-    <div className="m-7 flex flex-col gap-y-14">
+    <div className="m-4 md:m-7 flex flex-col gap-y-14">
       {/* hero */}
       <div className="relative flex  flex-col lg:flex-row h-auto lg:h-[611px] w-full  rounded-3xl overflow-hidden  border-neutral-60 border">
         <div className="w-[50%] relative ">
@@ -344,16 +434,17 @@ console.log(episodes)
 
       {/* episodes section */}
       <div id="episodes" className="flex flex-col">
+        {/* Season Selector */}
         <div className="flex w-full justify-between items-center">
-          <h1 className="font-title text-xl font-bold">Episodes</h1>
-          <div className="flex space-x-3 text-white ">
+          <h1 className="font-title text-xl font-bold text-white">Episodes</h1>
+          <div className="flex space-x-3 text-white">
             {Array.from({ length: numberOfSeasons }, (_, index) => {
               const seasonNumber = index + 1;
               return (
                 <button
                   key={seasonNumber}
                   onClick={() => setSelectedSeason(seasonNumber)}
-                  className={`relative py-2  px-3 rounded-t-lg  transition-all duration-500 after:content-[''] after:absolute after:left-0 after:-bottom-3 after:w-full  after:h-3  ${
+                  className={`relative py-2 px-3 rounded-t-lg transition-all duration-500 after:content-[''] after:absolute after:left-0 after:-bottom-3 after:w-full after:h-3 ${
                     selectedSeason === seasonNumber
                       ? "bg-neutral-80 text-white after:bg-neutral-80"
                       : ""
@@ -365,26 +456,55 @@ console.log(episodes)
             })}
           </div>
         </div>
-        <div className="flex flex-col items-start space-y-7 p-5 bg-gradient-to-b from-neutral-80 via-transparent   rounded-lg">
-          <div className="px-3 py-2 rounded-md bg-neutral-70 font-medium text-white">
-            10 Episode
+
+        {/* Episodes Content */}
+        <div className="flex flex-col items-start space-y-7 p-5 bg-gradient-to-b from-neutral-80 via-transparent rounded-lg">
+          {/* Episode Count */}
+          <div className="px-3 py-2 rounded-md bg-neutral-700 font-medium text-white">
+            {episodes.length} Episodes
           </div>
-          <div className="flex items-center space-x-5  w-full ">
-            {
-              episodes.map((episode)=>{
-                return (
-                  <EpisodeCrad key={episode.id} title={episode.name} poster={episode.still_path} rating={episode.vote_average} />
-                )
-              })
-            }
+
+          {/* Episodes Scroll Container */}
+          <div
+            ref={scrollContainerRef}
+            className="flex items-center space-x-5 w-full overflow-x-scroll md:py-3 md:pl-2 scroll-smooth"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {episodes.map((episode) => (
+              <EpisodeCrad
+                key={episode.id}
+                title={episode.name}
+                poster={episode.still_path}
+                rating={episode.vote_average}
+              />
+            ))}
           </div>
-          <div className="w-full flex justify-center items-center space-x-4">
-            <div className="p-2 bg-neutral-60 rounded-md text-neutral-70">
-              <ArrowRight size={20} className="rotate rotate-180" />
-            </div>
-            <div className="p-2 bg-primary-50 rounded-md text-neutral-70">
+
+          {/* Scroll Buttons */}
+          <div className="w-full md:flex justify-center items-center space-x-4 hidden ">
+            <button
+              onClick={scrollLeft}
+              disabled={!canScrollLeft}
+              className={`p-2 rounded-md transition-all duration-200 ${
+                canScrollLeft
+                  ? "bg-primary-50  cursor-pointer"
+                  : "bg-neutral-60 text-neutral-40 cursor-not-allowed opacity-50"
+              }`}
+            >
+              <ArrowRight size={20} className="rotate-180" />
+            </button>
+
+            <button
+              onClick={scrollRight}
+              disabled={!canScrollRight}
+              className={`p-2 rounded-md transition-all duration-200 ${
+                canScrollRight
+                  ? "bg-primary-50  cursor-pointer"
+                  : "bg-neutral-60 text-neutral-40 cursor-not-allowed opacity-50"
+              }`}
+            >
               <ArrowRight size={20} />
-            </div>
+            </button>
           </div>
         </div>
       </div>
@@ -397,7 +517,11 @@ console.log(episodes)
             View All <span className="text-primary-50 font-bold "> →</span>
           </a>
         </div>
-        <div className="flex items-center space-x-5">
+        <div className="flex items-center space-x-5 overflow-x-scroll md:py-3 md:pl-2" style={{ scrollbarWidth: "none"}}>
+          <SuggestionCard />
+          <SuggestionCard />
+          <SuggestionCard />
+          <SuggestionCard />
           <SuggestionCard />
           <SuggestionCard />
           <SuggestionCard />
