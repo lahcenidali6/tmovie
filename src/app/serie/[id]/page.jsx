@@ -221,7 +221,7 @@ export default function page({ params }) {
         </div>
         <div className="relative w-full p-5 content-center ">
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-20 w-full z-0 drop-shadow-2xl"
+            className="absolute inset-0 bg-cover bg-center opacity-100 lg:opacity-20 w-full z-0 drop-shadow-2xl"
             style={{
               backgroundImage: `url(https://image.tmdb.org/t/p/w500${data.backdropUrl})`,
             }}
@@ -348,7 +348,7 @@ export default function page({ params }) {
       {/* informations section */}
       <div id="informations" className="flex flex-col space-y-7">
         <h1 className="font-title text-xl font-bold">Informations</h1>
-        <div className="flex flex-col md:flex-row  justify-between gap-7 w-full px-3">
+        <div className="flex flex-col md:flex-row  justify-between md:gap-7 w-full px-3">
           <div className="flex flex-col  border-t border-neutral-60   w-full mx-2">
             <div className="flex justify-between border-b border-neutral-60 py-4">
               <div className="flex flex-nowrap gap-x-2 text-white items-center">
@@ -380,7 +380,7 @@ export default function page({ params }) {
             </div>
           </div>
           {/* second col */}
-          <div className="flex flex-col space-y-4 border-t border-neutral-60  w-full mx-2">
+          <div className="flex flex-col space-y-4 md:border-t border-neutral-60  w-full mx-2">
             <div className="flex justify-between border-b border-neutral-60 py-4">
               <div className="flex flex-nowrap gap-x-2 text-white items-center">
                 <Clapperboard size={18} className="text-primary-50" />
@@ -403,7 +403,7 @@ export default function page({ params }) {
             <Users size={18} className="text-primary-50" /> Stars
           </h1>
           <div
-            className="flex space-x-7 overflow-x-scroll"
+            className="flex space-x-7 overflow-x-scroll "
             style={{ scrollbarWidth: "none" }}
           >
             {/* set stars */}
@@ -414,7 +414,7 @@ export default function page({ params }) {
                   key={star.id}
                   className="flex flex-col gap-1 items-center "
                 >
-                  <div className="size-96 rounded-full overflow-hidden border border-primary-50 p-1">
+                  <div className="size-72 md:size-96 rounded-full overflow-hidden border border-primary-50 p-1">
                     <div
                       className="size-full bg-cover bg-center rounded-full "
                       style={{
