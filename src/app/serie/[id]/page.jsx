@@ -37,7 +37,7 @@ export default function page({ params }) {
   const [moreData, setMoreData] = useState([]);
   //reviews state
   const [reviewData, setReviewData] = useState([]);
-  const [seeMoreReview, setSeeMoreReview] = useState(false);
+  const [sortReview, setSortReview] = useState("newest")
 
   useEffect(() => {
     async function fetchData() {
@@ -202,10 +202,20 @@ export default function page({ params }) {
       setReviewData(reviewsRes.data.results);
     }
     getReviews();
-  }, [seeMoreReview]);
+  }, []);
 
+  useEffect(() => {
+    if (reviewData.length > 0) {
+      const sortedReviews = [...reviewData].sort((a, b) => {
+        const dateA = new Date(a.updated_at);
+        const dateB = new Date(b.updated_at);
+        return sortReview === "newest" ? dateB - dateA : dateA - dateB;
+      });
+      setReviewData(sortedReviews);
+    }
+  }, [sortReview]);
+  
   // Loading component
-
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -453,7 +463,7 @@ export default function page({ params }) {
                     <div
                       className="size-full bg-cover bg-center rounded-full "
                       style={{
-                        backgroundImage: `url(https://image.tmdb.org/t/p/w500${star.profile_path})`,
+                        backgroundImage: `url(https://image.tmdb.org/t/p/w92${star.profile_path})`,
                       }}
                     ></div>
                   </div>
@@ -473,8 +483,8 @@ export default function page({ params }) {
         <div className="flex w-full justify-between items-center">
           <h1 className="font-title text-xl font-bold text-white">Episodes</h1>
           <div
-            className={`hidden md:flex space-x-3 text-white md:${
-              numberOfSeasons > 6 ? "hidden" : "block"
+            className={`hidden  space-x-3 text-white md:${
+              numberOfSeasons <=6 ? "flex" : "hidden"
             } `}
           >
             {Array.from({ length: numberOfSeasons }, (_, index) => {
@@ -496,8 +506,8 @@ export default function page({ params }) {
           </div>
           <select
             onChange={(e) => setSelectedSeason(e.target.value)}
-            className={`block md:${
-              numberOfSeasons > 6 ? "block" : "hidden"
+            className={`block ${
+              numberOfSeasons>6? "md:block" : "md:hidden"
             }   py-2 px-3 rounded-t-lg bg-neutral-80`}
           >
             {Array.from({ length: numberOfSeasons }, (_, index) => {
@@ -604,11 +614,10 @@ export default function page({ params }) {
               <ListFilter size={18} className="text-white" />
               <span className="text-neutral-50 text-nowrap ">sort by :</span>
             </div>
-            <button className="text-black bg-primary-50 p-1 md:p-2 rounded-lg ">
+            <button onClick={() => setSortReview("newest")} className={`p-1 md:p-2 rounded-lg ${sortReview === "newest" ? "text-black bg-primary-50" : "text-neutral-50"}`}>
               Newest
             </button>
-            <button className="text-neutral-50 ">Oldest</button>
-            <button className="text-neutral-50 ">Hottest</button>
+            <button onClick={() => setSortReview("oldest")} className={`p-1 md:p-2 rounded-lg ${sortReview === "oldest" ? "text-black bg-primary-50" : "text-neutral-50"}`}>Oldest</button>
           </div>
           <div className="text-neutral-50 font-normal">
             ({reviewData.length})

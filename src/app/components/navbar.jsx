@@ -13,7 +13,7 @@ import {
   TvMinimalPlay,
   MessagesSquare,
 } from "lucide-react";
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
@@ -24,7 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
-const key = process.env.NEXT_PUBLIC_API_KEY;
+import { axiosInstance } from "@/lib/axios.js";
+import axios from "axios";
+
 
 export default function Navbar() {
   const [isOpenSearch, setIsOpenSearch] = useState(false);
@@ -34,6 +36,7 @@ export default function Navbar() {
   const [searchResultsData, setSearchResultsData] = useState([]);
   const [query, setQuery] = useState("");
   const debounceTimeout = useRef(null);
+  const abortControllerRef = useRef(null);
 
   function handleSearchInput() {
     setIsOpenSearch((prev) => !prev);
@@ -48,13 +51,13 @@ export default function Navbar() {
     setIsOpenUserCard((prev) => !prev);
   }
   // set no scroll when search input are displayed
-  // useEffect(() => {
-  //   if (isOpenSearch || isOpenSearchFilter) {
-  //     document.body.classList.add("overflow-hidden");
-  //   } else {
-  //     document.body.classList.remove("overflow-hidden");
-  //   }
-  // }, [isOpenSearch, isOpenSearchFilter]);
+  useEffect(() => {
+    if (isOpenSearch || isOpenSearchFilter) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+  }, [isOpenSearch, isOpenSearchFilter]);
 
   const handleSearch = (e) => {
     const value = e.target.value.trim();
@@ -73,12 +76,24 @@ export default function Navbar() {
   };
   async function getSearchResults(query) {
     try {
-      const res = await fetch(
-        `https://api.themoviedb.org/3/search/multi?api_key=${key}&query=${query}&language=en-US&page=1&include_adult=false&sort_by=popularity.desc`
-      );
-      if (!res.ok) throw new Error("somthings went wrong !");
-      const data = await res.json();
-      const formattedSearchResults = data.results
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      abortControllerRef.current = new AbortController();
+
+      const res = await axiosInstance.get("/search/multi", {
+        params: {
+          query: query,
+          language: "en-US",
+          page: 1,
+          include_adult: false,
+          sort_by: "popularity.desc",
+        },
+        signal: abortControllerRef.current.signal,
+      });
+
+      const formattedSearchResults = res.data.results
         .filter(
           (item) => item.media_type === "movie" || item.media_type === "tv"
         )
@@ -89,11 +104,16 @@ export default function Navbar() {
           rating: item.vote_average || 0,
           genres: item.genre_ids,
           releaseDate: item.first_air_date || item.release_date || "",
-          image: `https://image.tmdb.org/t/p/original${item.poster_path}`,
+          image: `https://image.tmdb.org/t/p/w92${item.poster_path}`,
         }));
+
       setSearchResultsData(formattedSearchResults);
+      abortControllerRef.current = null;
     } catch (err) {
-      console.log(err);
+      if (err.name !== "AbortError" && !axios.isCancel(err)) {
+        console.log(err);
+      }
+      abortControllerRef.current = null;
     }
   }
   return (
@@ -401,7 +421,10 @@ export function SearchCard({
       .map((genre) => genre.name);
   }
   return (
-    <a href={`${type=="tv"?`/serie/${id}` : `/movie/${id}` }`} className="flex gap-2 items-center cursor-pointer hover:bg-neutral-90 p-2 rounded-xl ">
+    <a
+      href={`${type == "tv" ? `/serie/${id}` : `/movie/${id}`}`}
+      className="flex gap-2 items-center cursor-pointer hover:bg-neutral-90 p-2 rounded-xl "
+    >
       {/* image  */}
       <div className="relative min-w-[30%] h-[100px] rounded-md overflow-hidden">
         <Image
