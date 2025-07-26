@@ -25,22 +25,26 @@ export default function page({ params }) {
   const [menu, setMenu] = useState("informations");
   const [loading, setLoading] = useState(false);
 
-
   //more like this state
   const [moreData, setMoreData] = useState([]);
   //reviews state
   const [reviewData, setReviewData] = useState([]);
-  const [sortReview, setSortReview] = useState("newest")
+  const [sortReview, setSortReview] = useState("newest");
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
       try {
-        const [dataRes, creditsRes, moreRes] = await Promise.all([
+        const [dataRes, creditsRes, moreRes, imagesRes] = await Promise.all([
           axiosInstance.get(`/movie/${id}`, { params: { language: "en-US" } }),
           axiosInstance.get(`/movie/${id}/credits`),
           axiosInstance.get(`/movie/${id}/similar`, {
             params: { language: "en-US", page: 1 },
+          }),
+          axiosInstance.get(`/movie/${id}/images`, {
+            params: {
+              include_image_language: "en,null", // Get English and language-neutral logos
+            },
           }),
         ]);
 
@@ -50,12 +54,12 @@ export default function page({ params }) {
 
         const formatted = {
           name: data.title,
-          year: data.release_date
-            ? data.release_date.slice(0, 4)
-            : "N/A",
+          year: data.release_date ? data.release_date.slice(0, 4) : "N/A",
           overview: data.overview,
           genres: data.genres || [],
-          posterUrl: `https://image.tmdb.org/t/p/w500${data.poster_path}`,
+          posterUrl: imagesRes.data.posters[1]?.file_path
+            ? `https://image.tmdb.org/t/p/w500${imagesRes.data.posters[1]?.file_path}`
+            : `https://image.tmdb.org/t/p/w500${data.poster_path}`,
           backdropUrl: `https://image.tmdb.org/t/p/w500${data.backdrop_path}`,
           country:
             data.origin_country && data.origin_country.length > 0
@@ -68,11 +72,12 @@ export default function page({ params }) {
               ? data.networks[0].name
               : "Unknown",
           director: creditsRes.data.crew[0].name || "N/A",
-          runtime: data.runtime
-            ? data.runtime + " min"
-            : "N/A",
+          runtime: data.runtime ? data.runtime + " min" : "N/A",
           imdbRating: data.vote_average.toFixed(1),
           seasons: data.number_of_seasons,
+          logo: imagesRes.data.logos[0]?.file_path
+            ? imagesRes.data.logos[0].file_path
+            : null,
         };
         setData(formatted);
         setStars(credits.cast);
@@ -87,8 +92,6 @@ export default function page({ params }) {
     }
   }, [id]);
 
-
-
   //fetch reviews
 
   useEffect(() => {
@@ -101,16 +104,16 @@ export default function page({ params }) {
     getReviews();
   }, []);
 
-    useEffect(() => {
-      if (reviewData.length > 0) {
-        const sortedReviews = [...reviewData].sort((a, b) => {
-          const dateA = new Date(a.updated_at);
-          const dateB = new Date(b.updated_at);
-          return sortReview === "newest" ? dateB - dateA : dateA - dateB;
-        });
-        setReviewData(sortedReviews);
-      }
-    }, [sortReview]);
+  useEffect(() => {
+    if (reviewData.length > 0) {
+      const sortedReviews = [...reviewData].sort((a, b) => {
+        const dateA = new Date(a.updated_at);
+        const dateB = new Date(b.updated_at);
+        return sortReview === "newest" ? dateB - dateA : dateA - dateB;
+      });
+      setReviewData(sortedReviews);
+    }
+  }, [sortReview]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -131,34 +134,6 @@ export default function page({ params }) {
             />
           )}
           {/* dots */}
-          <div className="absolute -right-1 h-full w-1  flex flex-col space-y-2">
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-            <div className="w-full h-4 bg-neutral-30 rounded-full"></div>
-          </div>
         </div>
         <div className="relative w-full p-5 content-center ">
           <div
@@ -169,8 +144,16 @@ export default function page({ params }) {
           ></div>
           <div className="flex flex-col gap-y-7 z-10 relative">
             <div className="flex flex-col gap-1">
-              <h1 className="text-4xl text-white font-title font-bold">
-                {data.name}
+              <h1 className="text-4xl text-white font-title font-bold flex items-center">
+                {data.logo ? (
+                  <img
+                    src={`https://image.tmdb.org/t/p/w300${data.logo}`}
+                    alt="logo"
+                    className="max-h-[60px]"
+                  />
+                ) : (
+                  data.name
+                )}
                 <span className="text-neutral-10 text-[12px] font-light ml-5">
                   ({data.year})
                 </span>
@@ -363,8 +346,6 @@ export default function page({ params }) {
         </div>
       </div>
 
-
-
       {/* More Like This section */}
       <div id="more" className="flex flex-col space-y-5 scroll-mt-20">
         <div className="flex w-full justify-between items-center">
@@ -406,10 +387,26 @@ export default function page({ params }) {
               <ListFilter size={18} className="text-white" />
               <span className="text-neutral-50 text-nowrap ">sort by :</span>
             </div>
-            <button onClick={() => setSortReview("newest")} className={`p-1 md:p-2 rounded-lg ${sortReview === "newest" ? "text-black bg-primary-50" : "text-neutral-50"}`}>
+            <button
+              onClick={() => setSortReview("newest")}
+              className={`p-1 md:p-2 rounded-lg ${
+                sortReview === "newest"
+                  ? "text-black bg-primary-50"
+                  : "text-neutral-50"
+              }`}
+            >
               Newest
             </button>
-            <button onClick={() => setSortReview("oldest")} className={`p-1 md:p-2 rounded-lg ${sortReview === "oldest" ? "text-black bg-primary-50" : "text-neutral-50"}`}>Oldest</button>
+            <button
+              onClick={() => setSortReview("oldest")}
+              className={`p-1 md:p-2 rounded-lg ${
+                sortReview === "oldest"
+                  ? "text-black bg-primary-50"
+                  : "text-neutral-50"
+              }`}
+            >
+              Oldest
+            </button>
           </div>
           <div className="text-neutral-50 font-normal">
             ({reviewData.length})
