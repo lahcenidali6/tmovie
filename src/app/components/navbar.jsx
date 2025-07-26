@@ -13,7 +13,7 @@ import {
   TvMinimalPlay,
   MessagesSquare,
 } from "lucide-react";
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
@@ -26,7 +26,6 @@ import {
 } from "@/app/components/ui/select";
 import { axiosInstance } from "@/lib/axios.js";
 import axios from "axios";
-
 
 export default function Navbar() {
   const [isOpenSearch, setIsOpenSearch] = useState(false);
@@ -121,36 +120,26 @@ export default function Navbar() {
       <div className="flex raltive  items-center justify-between  bg-neutral-90  text-white">
         {/* Left menu */}
 
-        <div
-          className={`   flex  items-center text-sm  font-medium transition`}
-        >
-          {["All", "Movies", "Series", "Genres"].map((item, idx) => (
-            <div
-              onClick={item === "Genres" ? handleGenres : undefined}
-              key={item}
-              className={`cursor-pointer px-1 md:px-2   ${
-                idx === 0
-                  ? "text-yellow-400  after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:bg-primary-40"
-                  : "text-white   hover:text-yellow-400 transition duration-500 "
-              } ${item !== "Genres" ? "relative" : ""}`}
-            >
-              <a
-                href={`/${
-                  item.toLocaleLowerCase() === "all"
-                    ? ""
-                    : item.toLocaleLowerCase()
-                }`}
-              >
-                {item}{" "}
-              </a>
-              {item === "Genres" && (
-                <>
-                  <span className="ml-1">▾</span>{" "}
-                  <GenresModale isOpen={isOpenGenres} />{" "}
-                </>
-              )}
-            </div>
-          ))}
+        <div className="flex items-center text-sm font-medium transition">
+          <div className="cursor-pointer px-1 md:px-2 relative text-yellow-400 after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:bg-primary-40">
+            <a href="/">All</a>
+          </div>
+
+          <div className="cursor-pointer px-1 md:px-2 relative text-white hover:text-yellow-400 transition duration-500">
+            <a href="/browse?type=movie">Movies</a>
+          </div>
+
+          <div className="cursor-pointer px-1 md:px-2 relative text-white hover:text-yellow-400 transition duration-500">
+            <a href="/series">Series</a>
+          </div>
+
+          <div
+            onClick={handleGenres}
+            className="cursor-pointer px-1 md:px-2 text-white hover:text-yellow-400 transition duration-500"
+          >
+            Genres <span className="ml-1">▾</span>
+            <GenresModale isOpen={isOpenGenres} />
+          </div>
         </div>
 
         {/* Search box & Notifications & Avatar */}
@@ -462,31 +451,25 @@ export function SearchCard({
 
 export function GenresModale(isOpen) {
   const genres = [
-    "Action",
-    "Comedy",
-    "Fantasy",
-    "Mystery",
-    "Spy",
-    "Adventure",
-    "Crime",
-    "Game Show",
-    "Romance",
-    "Talk Show",
-    "Animation",
-    "Documentary",
-    "Historical",
-    "Sci-Fi",
-    "Thriller",
-    "Anime",
-    "Drama",
-    "Horror",
-    "Short",
-    "War",
-    "Biography",
-    "Epic",
-    "Musical",
-    "Sports",
-    "Western",
+    { id: 28, name: "Action" },
+    { id: 12, name: "Adventure" },
+    { id: 16, name: "Animation" },
+    { id: 35, name: "Comedy" },
+    { id: 80, name: "Crime" },
+    { id: 99, name: "Documentary" },
+    { id: 18, name: "Drama" },
+    { id: 10751, name: "Family" },
+    { id: 14, name: "Fantasy" },
+    { id: 36, name: "History" },
+    { id: 27, name: "Horror" },
+    { id: 10402, name: "Music" },
+    { id: 9648, name: "Mystery" },
+    { id: 10749, name: "Romance" },
+    { id: 878, name: "Science Fiction" },
+    { id: 53, name: "Thriller" },
+    { id: 10770, name: "TV Movie" },
+    { id: 10752, name: "War" },
+    { id: 37, name: "Western" },
   ];
 
   return (
@@ -500,13 +483,14 @@ export function GenresModale(isOpen) {
       <div className="grid  grid-cols-3 lg:grid-cols-5  text-center gap-5  border-neutral-20 border-[1.5px] border-dashed  rounded-[32px] p-6">
         {genres.map((genre, index) => {
           return (
-            <div
+            <a
               key={index}
+              href={`/browse?type=movie&genre=${genre.id}`}
               className="font-title font-bold flex text-[12px] md:text-md gap-2 flex-nowrap text-nowrap"
             >
               <div className="w-[9px] h-[9px]  md:w-[12px] md:h-[12px] rounded-full bg-primary-50"></div>
-              {genre}
-            </div>
+              {genre.name}
+            </a>
           );
         })}
       </div>

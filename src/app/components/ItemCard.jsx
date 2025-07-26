@@ -29,9 +29,9 @@ export default function ItemCard({
     idToNameOfGenre(movieGenres);
   }
   return (
-    <a href={type==="tv"?`/serie/${id}` : `/movie/${id}`} className="relative cursor-pointer group bg-neutral-80 rounded-lg  overflow-hidden p-2 md:hover:scale-110 z-20 transition min-w-[169px] min-h-[229px] md:min-w-[193px] md:min-h-[262px] ">
+    <a href={type==="tv"?`/serie/${id}` : `/movie/${id}`} className="relative cursor-pointer group bg-neutral-80 rounded-lg  overflow-hidden p-2 md:hover:scale-110 z-20 transition min-w-[169px] min-h-[229px] lg:min-w-[193px] lg:min-h-[262px]  ">
       <div className="relative rounded-lg overflow-hidden w-full h-full">
-        <div className="overflow-x-hidden relative w-full h-full">
+        <div className="overflow-x-hidden relative w-full aspect-[2/3]">
           {/* hover box */}
           <div className="absolute  bottom-0 opacity-0 group-hover:opacity-100 flex flex-col  bg-black/80   items-center justify-center text-[12px]  text-white w-full h-full z-10 text-center px-2 transition duration-400">
             <div className="font-extralight max-h-[50%]   text-ellipsis  overflow-hidden">
@@ -53,7 +53,7 @@ export default function ItemCard({
         </div>
 
         <div className="absolute top-2 left-2 bg-neutral-80  text-white text-xs  px-2 py-1 rounded-full flex items-center gap-1">
-          <FaStar className="text-primary-50" size={12} /> {rating.toFixed(1)}
+          <FaStar className="text-primary-50" size={12} /> {rating?.toFixed(1)}
           <span className="text-neutral-30">/ 10</span>
         </div>
         <div className="absolute top-0 right-0 text-white  p-2 rounded-md bg-neutral-70 z-20 ">

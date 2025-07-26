@@ -588,7 +588,7 @@ export default function page({ params }) {
         className="flex flex-col space-y-5 border border-neutral-50 px-3 py-2 md:px-5 md:py-3 scroll-mt-20"
       >
         <h1 className="font-title text-xl font-bold text-white">Review</h1>
-
+        
         <div className="border border-neutral-50 px-1 py-1 md:px-4 md:py-2 flex justify-between items-center font-medium rounded-xl text-sm md:text-[16px]">
           <div className="flex justify-center space-x-1 md:space-x-5">
             <div className="flex flex-nowrap  gap-x-1 items-center">

@@ -46,7 +46,7 @@ const GenresSlider = () => {
     <div className="text-white flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <h2 className="text-white text-2xl font-bold font-title">Genres</h2>
-        <a href="#" className="text-white flex items-center gap-1">
+        <a href={`/browse?type=movie&genre=${genreIndex}`}className="text-white flex items-center gap-1">
           View All <span className="text-primary-50 font-bold">→</span>
         </a>
       </div>
