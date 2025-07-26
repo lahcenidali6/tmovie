@@ -27,7 +27,7 @@ export default function SuggestionCard({
   return (
     <a href={type==="tv"?`/serie/${id}`:`/movie/${id}`} className="flex flex-col space-y-3 min-w-[160px] h-[200px] md:min-w-[201px] md:h-[261px] border rounded-xl border-neutral-60 p-2 relative  w-[195px]   group md:hover:scale-105 overflow-hidden transition-all">
       <div
-        className="bg-cover bg-center w-full h-[165px] rounded-md "
+        className="bg-cover bg-top w-full h-[165px] rounded-md "
         style={{
           backgroundImage: `url('https://image.tmdb.org/t/p/w500${poster}')`,
         }}

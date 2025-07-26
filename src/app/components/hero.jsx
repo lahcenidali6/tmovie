@@ -107,6 +107,7 @@ useEffect(() => {
 
       // handle recommendations series
       const formattedRecommendations = dataOfRecommendations.data.results.map((serie) => ({
+        id:serie.id,
         title: serie.name,
         year: serie.first_air_date?.slice(0, 4),
         rating: serie.vote_average,

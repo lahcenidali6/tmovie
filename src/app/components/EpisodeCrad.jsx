@@ -3,7 +3,7 @@ import { FaStar } from "react-icons/fa";
 export default function ({title, poster, rating}) {
 
   return (
-    <div className={`relative bg-cover bg-center h-[180px] min-w-[150] md:h-[230px] md:min-w-[195px] rounded-xl  border-neutral-60 border group md:hover:scale-105 overflow-hidden transition-all`} 
+    <div className={`relative bg-cover bg-top h-[180px] min-w-[150] md:h-[230px] md:min-w-[195px] rounded-xl  border-neutral-60 border group md:hover:scale-105 overflow-hidden transition-all`} 
      style={{
     backgroundImage: `url('https://image.tmdb.org/t/p/w500${poster}')`
   }}>

@@ -51,7 +51,7 @@ const GenresSlider = () => {
         </a>
       </div>
 
-      <div className="flex gap-2 text-[18px] text-neutral-30 font-medium flex-wrap">
+      <div className="hidden lg:flex gap-2 text-[18px] text-neutral-30 font-medium flex-wrap">
         {movieGenres.slice(0, 7).map((genre) => (
           <div
             key={genre.id}
@@ -66,6 +66,18 @@ const GenresSlider = () => {
           </div>
         ))}
       </div>
+        <select onChange={(e)=>setGenreIndex(e.target.value)} className="block lg:hidden text-[18px] w-fit text-neutral-30 font-medium col-1">
+        {movieGenres.slice(0, 7).map((genre) => (
+          <option
+            key={genre.id}
+            className={`p-2  text-neutral-90`}
+            value={genre.id}
+          >
+            {genre.name}
+          </option>
+        ))}
+      </select>
+
 
       {/* Slider or Skeletons */}
       <div
@@ -79,6 +91,7 @@ const GenresSlider = () => {
           : data?.map((movie) => (
               <ItemCard
                 key={movie.id}
+                id={movie.id}
                 title={movie.title}
                 year={movie.year}
                 genres={movie.genres}
