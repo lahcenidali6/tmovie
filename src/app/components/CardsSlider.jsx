@@ -4,12 +4,12 @@ import ItemCard from './ItemCard';
 
 
 
-export default function CardsSlider({title,data}) {
+export default function CardsSlider({title,data,browse}) {
   return (
     <section className=" w-full">
       <div className="flex justify-between items-center ">
         <h2 className="text-white text-2xl font-bold font-title">{title}</h2>
-        <a href="#" className="text-white flex items-center gap-1">
+        <a href={`browse?${browse}`} className="text-white flex items-center gap-1">
           View All <span className='text-primary-50 font-bold '> →</span>
         </a>
       </div>

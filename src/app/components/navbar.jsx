@@ -14,6 +14,7 @@ import {
   MessagesSquare,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/app/components/ui/toggle-group";
@@ -36,6 +37,25 @@ export default function Navbar() {
   const [query, setQuery] = useState("");
   const debounceTimeout = useRef(null);
   const abortControllerRef = useRef(null);
+  
+  // Get current route info
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const mediaType = searchParams.get("type");
+
+  // Helper function to determine active state
+  const getActiveClass = (linkType) => {
+    if (pathname === "/" && linkType === "all") {
+      return "text-primary-50 after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:bg-primary-40";
+    }
+    if (pathname === "/browse" && mediaType === "movie" && linkType === "movie") {
+      return "text-primary-50 after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:bg-primary-40";
+    }
+    if (pathname === "/browse" && mediaType === "tv" && linkType === "tv") {
+      return "text-primary-50 after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:bg-primary-40";
+    }
+    return "text-white hover:text-primary-50 transition duration-500";
+  };
 
   function handleSearchInput() {
     setIsOpenSearch((prev) => !prev);
@@ -121,21 +141,21 @@ export default function Navbar() {
         {/* Left menu */}
 
         <div className="flex items-center text-sm font-medium transition">
-          <div className="cursor-pointer px-1 md:px-2 relative text-yellow-400 after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:bg-primary-40">
+          <div className={`cursor-pointer px-1 md:px-2 relative ${getActiveClass("all")}`}>
             <a href="/">All</a>
           </div>
 
-          <div className="cursor-pointer px-1 md:px-2 relative text-white hover:text-yellow-400 transition duration-500">
+          <div className={`cursor-pointer px-1 md:px-2 relative ${getActiveClass("movie")}`}>
             <a href="/browse?type=movie">Movies</a>
           </div>
 
-          <div className="cursor-pointer px-1 md:px-2 relative text-white hover:text-yellow-400 transition duration-500">
-            <a href="/series">Series</a>
+          <div className={`cursor-pointer px-1 md:px-2 relative ${getActiveClass("tv")}`}>
+            <a href="/browse?type=tv">Series</a>
           </div>
 
           <div
             onClick={handleGenres}
-            className="cursor-pointer px-1 md:px-2 text-white hover:text-yellow-400 transition duration-500"
+            className="cursor-pointer px-1 md:px-2 text-white hover:text-primary-50 transition duration-500"
           >
             Genres <span className="ml-1">▾</span>
             <GenresModale isOpen={isOpenGenres} />

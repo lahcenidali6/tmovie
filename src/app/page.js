@@ -70,9 +70,9 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-7 m-4">
       <Hero></Hero>
-      <CardsSlider title={"Trending Movies"} data={trendingMovies} />
+      <CardsSlider title={"Trending Movies"} data={trendingMovies} browse="type=movie&filter=trending" />
       <GenresSlider />
-      <CardsSlider title={"Trending Series"} data={trendingSeries} />
+      <CardsSlider title={"Trending Series"} data={trendingSeries} browse="type=tv&filter=trending" />
       {/* <TripeBanner/> */}
     </div>
   );
