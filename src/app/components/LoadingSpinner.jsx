@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function LoadingSpinner() {
   return (
-    <div className="fixed inset-0 bg-neutral-90/80 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="w-full h-screen content-center bg-neutral-90/80 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="flex flex-col items-center space-y-4">
         <div className="relative">
           <div className="w-16 h-16 border-4 border-neutral-60 border-t-primary-50 rounded-full animate-spin"></div>

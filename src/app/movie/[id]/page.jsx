@@ -120,7 +120,7 @@ export default function page({ params }) {
   }
 
   return (
-    <div className="m-4 md:m-7 flex flex-col gap-y-14">
+    <main className="m-4 md:m-7 flex flex-col gap-y-14">
       {/* hero */}
       <div className="relative flex  flex-col lg:flex-row h-auto lg:h-[611px] w-full  rounded-3xl overflow-hidden  border-neutral-60 border">
         <div className="w-[50%] relative ">
@@ -455,6 +455,6 @@ export default function page({ params }) {
           );
         })}
       </div>
-    </div>
+    </main>
   );
 }

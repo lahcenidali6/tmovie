@@ -36,12 +36,12 @@ export default function SuggestionCard({
         <h1 className="font-semibold text-[12px] md:text-sm text-white  text-overflow: ellipsis overflow-hidden whitespace-nowrap">
           {title}
         </h1>
-        <div className="text-[10px] md:text-[12px] text-neutral-20 font-light">
+        <div className="text-[10px] md:text-[12px] text-neutral-20 font-light text-center">
           {genreNames?.join(", ")}
         </div>
         <div className="text-white text-[9px] md:text-[12px] flex items-center gap-1">
           <FaStar className="text-primary-50" size={12} />
-          {rating}
+          {rating?.toFixed(1)}
           <span className="text-neutral-30">/10</span>
         </div>
       </div>

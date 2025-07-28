@@ -101,7 +101,7 @@ useEffect(() => {
         genres: series.genre_ids,
         description: series.overview,
         type: "tv",
-        imageUrl: `https://image.tmdb.org/t/p/original${series.backdrop_path}`,
+        imageUrl: `https://image.tmdb.org/t/p/w780${series.backdrop_path}`,
       }));
       setPopularSeries(formattedSeries);
 

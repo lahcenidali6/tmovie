@@ -6,11 +6,11 @@ const VerticalCard = ({ item }) => {
     <div style={{
     backgroundImage: `url("${item?.imageUrl}")`,
     backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundPosition: "top",
     backgroundRepeat: "no-repeat",
     width: "100%",
     height: "100%",
-  }} className="relative bg-cover h-[391px]  flex-shrink-0   group rounded-2xl overflow-hidden p-3 ">
+  }} className="relative bg-cover h-[391px]  flex-shrink-0   group rounded-2xl overflow-hidden md:p-3 ">
     
 
       {/* Overlay for text content */}
