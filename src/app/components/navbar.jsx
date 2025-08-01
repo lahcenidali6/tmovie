@@ -2,7 +2,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { movieGenres, tvGenres } from "@/app/utils/genres";
-import { FiSearch, FiStar } from "react-icons/fi";
+import { FiSearch, } from "react-icons/fi";
 import { FaTimes, FaStar } from "react-icons/fa";
 import { BiSolidCategory } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";

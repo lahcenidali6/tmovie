@@ -63,13 +63,13 @@ export default function Sidebar(isClose) {
 
 function SidebarItem({ icon, label, active = false }) {
   return (
-    <div
+    <a href={`/${label.toLowerCase()}`}
       className={`flex items-center relative gap-3 px-2 py-2 rounded cursor-pointer  transition-all  after:content-[''] ${
         active ? "after:absolute text-primary-50 bg-gradient-to-r from-neutral-80 to-neutral-90" : ""
       }    after:left-[0] after:h-full after:w-[6px] after:bg-yellow-400 after:rounded-tr-full after:rounded-br-full before:rounded-br-full hover:bg-neutral-80 transition-all`}
     >
       <div className="text-lg">{icon}</div>
       <span className="text-sm font-medium truncate">{label}</span>
-    </div>
+    </a>
   );
 }
