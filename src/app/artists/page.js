@@ -3,16 +3,19 @@ import React, { useEffect, useState, useRef } from "react";
 import ArtistCard from "./components/ArtistCard";
 import { FiSearch } from "react-icons/fi";
 import { axiosInstance } from "@/lib/axios";
+import ArtistCardSkeleton from "./components/ArtistCardSkeleton";
 
 export default function page() {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef(null);
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       async function fetchData() {
+        setIsLoading(true);
         try {
           if (abortControllerRef.current) {
             abortControllerRef.current.abort();
@@ -30,6 +33,8 @@ export default function page() {
           abortControllerRef.current = null;
         } catch (err) {
           console.log(err);
+        } finally {
+          setIsLoading(false);
         }
       }
 
@@ -44,7 +49,7 @@ export default function page() {
       <h1 className=" font-title font-bold text-[22px] w-full text-center text-white">
         List of Artists
       </h1>
-      <div className="flex relative items-center bg-neutral-80 w-full rounded-md p-2 ">
+      <div className="flex relative items-center bg-neutral-80 w-full md:w-[70%] left-[50%] -translate-x-[50%] rounded-md p-2 ">
         <FiSearch className="text-white text-lg mr-2 " />
         <input
           onChange={(e) => setQuery(e.target.value.trim())}
@@ -67,16 +72,18 @@ export default function page() {
         <div className="text-center text-warning">No results found</div>
       )}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 md:gap-5">
-        {data.map((person) => {
-          return (
-            <ArtistCard
-              key={person.id}
-              id={person.id}
-              profile={person.profile_path}
-              name={person.name}
-            />
-          );
-        })}
+        {isLoading
+          ? Array.from({ length: 12 }).map((_, i) => (
+              <ArtistCardSkeleton key={i} />
+            ))
+          : data.map((person) => (
+              <ArtistCard
+                key={person.id}
+                id={person.id}
+                profile={person.profile_path}
+                name={person.name}
+              />
+            ))}
       </div>
       {/* pagination */}
       {data.length > 0 && (

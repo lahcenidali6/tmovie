@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import {
@@ -158,7 +158,7 @@ export default function page({ params }) {
                   ({data.year})
                 </span>
               </h1>
-              <p className="">Series . {data.runtime} . TV-MA</p>
+              <p className="">Movie . {data.runtime} . TV-MA</p>
             </div>
             <div className="flex max-w-full">
               <div className="flex flex-col flex-1 gap-y-7">
@@ -324,7 +324,7 @@ export default function page({ params }) {
             {stars.map((star) => {
               return (
                 <a
-                  href="#"
+                  href={`/artist/${star.id}`}
                   key={star.id}
                   className="flex flex-col gap-1 items-center "
                 >

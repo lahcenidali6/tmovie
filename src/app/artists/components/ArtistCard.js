@@ -34,7 +34,7 @@ export default function ArtistCard({ id, profile, name }) {
   }, [id]);
 
   return (
-    <div
+    <a href={`/artist/${id}`}
       className="relative min-w-[180px] min-h-[240px]  bg-cover bg-top rounded-xl cursor-pointer overflow-hidden group scale-100 hover:scale-105 transition-all "
       style={{
         backgroundImage: `url('https://image.tmdb.org/t/p/w185${profile}')`,
@@ -58,6 +58,6 @@ export default function ArtistCard({ id, profile, name }) {
         </p>
       </div>
       <div className="w-full h-full bg-transparent group-hover:bg-black/20"></div>
-    </div>
+    </a>
   );
 }

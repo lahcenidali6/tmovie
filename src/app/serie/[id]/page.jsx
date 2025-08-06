@@ -434,9 +434,10 @@ export default function page({ params }) {
           >
             {/* set stars */}
             {stars.map((star) => {
+              
               return (
                 <a
-                  href="#"
+                  href={`/artist/${star.id}`}
                   key={star.id}
                   className="flex flex-col gap-1 items-center "
                 >
